@@ -77,7 +77,7 @@ class AuthService:
         # Create user object
         user_in_db = UserInDB(
             name=user_data.name,
-            email=user_data.email,
+            email=str(user_data.email),
             hashed_password=hashed_password,
             created_at=datetime.now(timezone.utc),
             is_active=True

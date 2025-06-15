@@ -34,7 +34,7 @@ class ReservationCreateRequest(BaseModel):
                 "guest_name": "Jan Kowalski",
                 "guest_email": "jan@example.com",
                 "guest_phone": "+48 123 456 789",
-                "special_requests": "Late check-in requested"
+                "special_requests": "Late check-in requested",
             }
         }
     )
@@ -44,26 +44,30 @@ class ReservationCreateRequest(BaseModel):
     check_out_date: date = Field(..., description="Check-out date")
     guests: int = Field(..., ge=1, le=10, description="Number of guests")
     rooms: int = Field(1, ge=1, le=5, description="Number of rooms")
-    guest_name: str = Field(..., min_length=2, max_length=100, description="Guest full name")
+    guest_name: str = Field(
+        ..., min_length=2, max_length=100, description="Guest full name"
+    )
     guest_email: str = Field(..., description="Guest email address")
     guest_phone: str = Field(..., description="Guest phone number")
-    special_requests: Optional[str] = Field(None, max_length=500, description="Special requests or notes")
+    special_requests: Optional[str] = Field(
+        None, max_length=500, description="Special requests or notes"
+    )
 
-    @field_validator('check_in_date')
+    @field_validator("check_in_date")
     @classmethod
     def validate_check_in_date(cls, v: date) -> date:
         if v < date.today():
-            raise ValueError('Check-in date cannot be in the past')
+            raise ValueError("Check-in date cannot be in the past")
         return v
 
-    @field_validator('check_out_date')
+    @field_validator("check_out_date")
     @classmethod
     def validate_check_out_date(cls, v: date, info) -> date:
         # Access other field values through info.data
-        if hasattr(info, 'data') and 'check_in_date' in info.data:
-            check_in_date = info.data['check_in_date']
+        if hasattr(info, "data") and "check_in_date" in info.data:
+            check_in_date = info.data["check_in_date"]
             if v <= check_in_date:
-                raise ValueError('Check-out date must be after check-in date')
+                raise ValueError("Check-out date must be after check-in date")
         return v
 
 
@@ -78,16 +82,16 @@ class ReservationUpdateRequest(BaseModel):
     special_requests: Optional[str] = Field(None, max_length=500)
     status: Optional[ReservationStatus] = None
 
-    @field_validator('check_out_date')
+    @field_validator("check_out_date")
     @classmethod
     def validate_check_out_date(cls, v: Optional[date], info) -> Optional[date]:
         if v is None:
             return v
 
-        if hasattr(info, 'data') and 'check_in_date' in info.data:
-            check_in_date = info.data['check_in_date']
+        if hasattr(info, "data") and "check_in_date" in info.data:
+            check_in_date = info.data["check_in_date"]
             if check_in_date and v <= check_in_date:
-                raise ValueError('Check-out date must be after check-in date')
+                raise ValueError("Check-out date must be after check-in date")
         return v
 
 
@@ -101,7 +105,7 @@ class ReservationSearchRequest(BaseModel):
                 "page": 1,
                 "limit": 10,
                 "sort_by": "check_in_date",
-                "sort_order": "asc"
+                "sort_order": "asc",
             }
         }
     )
@@ -114,7 +118,9 @@ class ReservationSearchRequest(BaseModel):
     guest_email: Optional[str] = Field(None, description="Filter by guest email")
     page: int = Field(1, ge=1, description="Page number")
     limit: int = Field(20, ge=1, le=100, description="Results per page")
-    sort_by: Optional[str] = Field("created_at", description="Sort by: created_at, check_in_date, total_price")
+    sort_by: Optional[str] = Field(
+        "created_at", description="Sort by: created_at, check_in_date, total_price"
+    )
     sort_order: Optional[str] = Field("desc", description="Sort order: asc, desc")
 
 
@@ -146,7 +152,7 @@ class ReservationResponse(BaseModel):
                 "created_at": "2024-12-01T10:30:00Z",
                 "updated_at": "2024-12-01T10:35:00Z",
                 "cancelled_at": None,
-                "cancellation_reason": None
+                "cancellation_reason": None,
             }
         }
     )
@@ -165,7 +171,9 @@ class ReservationResponse(BaseModel):
     guest_name: str = Field(..., description="Guest full name")
     guest_email: str = Field(..., description="Guest email address")
     guest_phone: str = Field(..., description="Guest phone number")
-    special_requests: Optional[str] = Field(None, description="Special requests or notes")
+    special_requests: Optional[str] = Field(
+        None, description="Special requests or notes"
+    )
     price_per_night: float = Field(..., description="Price per night")
     total_price: float = Field(..., description="Total price for the stay")
     currency: str = Field(..., description="Currency code")
@@ -208,13 +216,13 @@ class ReservationInDB(BaseModel):
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for Firestore"""
         data = self.model_dump()
-        data.pop('id', None)
+        data.pop("id", None)
 
         # Convert dates to strings for Firestore
-        if isinstance(data.get('check_in_date'), date):
-            data['check_in_date'] = data['check_in_date'].isoformat()
-        if isinstance(data.get('check_out_date'), date):
-            data['check_out_date'] = data['check_out_date'].isoformat()
+        if isinstance(data.get("check_in_date"), date):
+            data["check_in_date"] = data["check_in_date"].isoformat()
+        if isinstance(data.get("check_out_date"), date):
+            data["check_out_date"] = data["check_out_date"].isoformat()
 
         return data
 
@@ -222,13 +230,13 @@ class ReservationInDB(BaseModel):
     def from_dict(cls, data: Dict[str, Any], doc_id: str = None):
         """Create from Firestore document"""
         if doc_id:
-            data['id'] = doc_id
+            data["id"] = doc_id
 
         # Convert string dates back to date objects
-        if isinstance(data.get('check_in_date'), str):
-            data['check_in_date'] = date.fromisoformat(data['check_in_date'])
-        if isinstance(data.get('check_out_date'), str):
-            data['check_out_date'] = date.fromisoformat(data['check_out_date'])
+        if isinstance(data.get("check_in_date"), str):
+            data["check_in_date"] = date.fromisoformat(data["check_in_date"])
+        if isinstance(data.get("check_out_date"), str):
+            data["check_out_date"] = date.fromisoformat(data["check_out_date"])
 
         return cls(**data)
 
@@ -247,15 +255,19 @@ class ReservationStatsResponse(BaseModel):
                 "cancelled_reservations": 368,
                 "total_revenue": 567890.50,
                 "average_stay_length": 2.8,
-                "occupancy_rate": 67.3
+                "occupancy_rate": 67.3,
             }
         }
     )
 
     total_reservations: int = Field(..., description="Total number of reservations")
-    confirmed_reservations: int = Field(..., description="Number of confirmed reservations")
+    confirmed_reservations: int = Field(
+        ..., description="Number of confirmed reservations"
+    )
     pending_reservations: int = Field(..., description="Number of pending reservations")
-    cancelled_reservations: int = Field(..., description="Number of cancelled reservations")
+    cancelled_reservations: int = Field(
+        ..., description="Number of cancelled reservations"
+    )
     total_revenue: float = Field(..., description="Total revenue from all reservations")
     average_stay_length: float = Field(..., description="Average stay length in nights")
     occupancy_rate: float = Field(..., description="Current occupancy rate percentage")

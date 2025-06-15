@@ -21,18 +21,26 @@ class HotelStatus(str, Enum):
 
 
 class HotelSearchRequest(BaseModel):
-    query: Optional[str] = Field(None, description="Search query for hotel name or location")
+    query: Optional[str] = Field(
+        None, description="Search query for hotel name or location"
+    )
     city: Optional[str] = Field(None, description="City to filter hotels")
-    category: Optional[HotelCategory] = Field(None, description="Hotel category to filter")
+    category: Optional[HotelCategory] = Field(
+        None, description="Hotel category to filter"
+    )
     min_price: Optional[float] = Field(None, description="Minimum price per night")
     max_price: Optional[float] = Field(None, description="Maximum price per night")
     min_rating: Optional[float] = Field(None, description="Minimum rating")
-    amenities: Optional[List[str]] = Field(None, description="List of amenities to filter hotels")
+    amenities: Optional[List[str]] = Field(
+        None, description="List of amenities to filter hotels"
+    )
     check_in: Optional[str] = Field(None, description="Check-in date (YYYY-MM-DD)")
     check_out: Optional[str] = Field(None, description="Check-out date (YYYY-MM-DD)")
     guests: Optional[int] = Field(None, description="Number of guests for the booking")
     page: Optional[int] = Field(1, ge=1, description="Page number for pagination")
-    limit: Optional[int] = Field(10, ge=1, le=100, description="Number of results per page")
+    limit: Optional[int] = Field(
+        10, ge=1, le=100, description="Number of results per page"
+    )
     sort_by: Optional[str] = Field("rating", description="Sort by: price, rating, name")
     sort_order: Optional[str] = Field("desc", description="Sort order: asc, desc")
 
@@ -52,14 +60,16 @@ class HotelSearchRequest(BaseModel):
                 "page": 1,
                 "limit": 10,
                 "sort_by": "rating",
-                "sort_order": "desc"
+                "sort_order": "desc",
             }
         }
 
 
 class HotelCreateRequest(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, description="Hotel name")
-    description: Optional[str] = Field(None, max_length=2500, description="Hotel description")
+    description: Optional[str] = Field(
+        None, max_length=2500, description="Hotel description"
+    )
     category: HotelCategory = Field(..., description="Hotel category")
     address: str = Field(..., min_length=5, max_length=300, description="Full address")
     city: str = Field(..., min_length=2, max_length=170, description="City name")
@@ -67,18 +77,32 @@ class HotelCreateRequest(BaseModel):
     latitude: Optional[float] = Field(None, ge=-90, le=90, description="Latitude")
     longitude: Optional[float] = Field(None, ge=-180, le=180, description="Longitude")
     price_per_night: float = Field(..., ge=0, description="Base price per night")
-    currency: str = Field("PLN", min_length=3, max_length=3, description="Currency code (ISO 4217)")
-    max_guests: int = Field(2, ge=1, le=20, description="Maximum number of guests per room")
+    currency: str = Field(
+        "PLN", min_length=3, max_length=3, description="Currency code (ISO 4217)"
+    )
+    max_guests: int = Field(
+        2, ge=1, le=20, description="Maximum number of guests per room"
+    )
     total_rooms: int = Field(1, ge=1, description="Total number of rooms")
-    amenities: Optional[List[str]] = Field(None, description="List of amenities offered by the hotel")
-    images: List[str] = Field(..., min_length=1, max_length=10, description="List of image URLs")
+    amenities: Optional[List[str]] = Field(
+        None, description="List of amenities offered by the hotel"
+    )
+    images: List[str] = Field(
+        ..., min_length=1, max_length=10, description="List of image URLs"
+    )
     contact_phone: Optional[str] = Field(None, description="Contact phone number")
     contact_email: Optional[str] = Field(None, description="Contact email address")
     website: Optional[str] = Field(None, description="Hotel website URL")
-    check_in_time: Optional[str] = Field("14:00", description="Default check-in time (HH:MM)")
-    check_out_time: Optional[str] = Field("11:00", description="Default check-out time (HH:MM)")
-    cancellation_policy: str = Field("Free cancellation up to 24 hours before arrival",
-                                     description="Cancellation policy")
+    check_in_time: Optional[str] = Field(
+        "14:00", description="Default check-in time (HH:MM)"
+    )
+    check_out_time: Optional[str] = Field(
+        "11:00", description="Default check-out time (HH:MM)"
+    )
+    cancellation_policy: str = Field(
+        "Free cancellation up to 24 hours before arrival",
+        description="Cancellation policy",
+    )
 
     class Config:
         json_schema_extra = {
@@ -96,13 +120,16 @@ class HotelCreateRequest(BaseModel):
                 "max_guests": 4,
                 "total_rooms": 150,
                 "amenities": ["wifi", "spa", "parking", "restaurant", "gym", "pool"],
-                "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+                "images": [
+                    "https://example.com/image1.jpg",
+                    "https://example.com/image2.jpg",
+                ],
                 "contact_phone": "+48 22 XXX XXXX",
                 "contact_email": "info@grandhotel.pl",
                 "website": "https://grandhotel.pl",
                 "check_in_time": "15:00",
                 "check_out_time": "11:00",
-                "cancellation_policy": "Darmowa anulacja do 24 godzin przed przyjazdem"
+                "cancellation_policy": "Darmowa anulacja do 24 godzin przed przyjazdem",
             }
         }
 
@@ -189,7 +216,7 @@ class HotelResponse(BaseModel):
                 "cancellation_policy": "Darmowa anulacja do 24 godzin przed przyjazdem",
                 "status": "active",
                 "created_at": "2024-01-15T10:30:00Z",
-                "updated_at": "2024-01-20T14:45:00Z"
+                "updated_at": "2024-01-20T14:45:00Z",
             }
         }
 
@@ -212,9 +239,10 @@ class HotelListResponse(BaseModel):
                 "limit": 20,
                 "total_pages": 8,
                 "has_next": True,
-                "has_previous": False
+                "has_previous": False,
             }
         }
+
 
 class HotelInDB(BaseModel):
     id: Optional[str] = None
@@ -248,14 +276,14 @@ class HotelInDB(BaseModel):
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for Firestore"""
         data = self.model_dump()
-        data.pop('id', None)  # Firestore handles ID separately
+        data.pop("id", None)  # Firestore handles ID separately
         return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], doc_id: str = None):
         """Create from Firestore document"""
         if doc_id:
-            data['id'] = doc_id
+            data["id"] = doc_id
         return cls(**data)
 
     def to_response(self) -> HotelResponse:

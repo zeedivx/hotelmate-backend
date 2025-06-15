@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import auth#, hotels, reservations
+from app.routers import auth  # , hotels, reservations
 
 
 @asynccontextmanager
@@ -27,7 +27,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS middleware for React Native
@@ -51,17 +51,14 @@ async def root():
     return {
         "message": "HotelMate API is running! 🏨",
         "version": "1.0.0",
-        "docs": "/docs"
+        "docs": "/docs",
     }
 
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
-    return {
-        "status": "healthy",
-        "environment": settings.ENVIRONMENT
-    }
+    return {"status": "healthy", "environment": settings.ENVIRONMENT}
 
 
 if __name__ == "__main__":
@@ -72,5 +69,5 @@ if __name__ == "__main__":
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_level="info"
+        log_level="info",
     )

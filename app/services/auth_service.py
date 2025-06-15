@@ -11,7 +11,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthService:
-
     @staticmethod
     def hash_password(password: str) -> str:
         """Hash a password using bcrypt"""
@@ -23,24 +22,26 @@ class AuthService:
         return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
-    def create_access_token(user_id: str, expires_delta: Optional[timedelta] = None) -> str:
+    def create_access_token(
+        user_id: str, expires_delta: Optional[timedelta] = None
+    ) -> str:
         """Create JWT access token"""
         if expires_delta:
             expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(hours=settings.JWT_EXPIRATION_HOURS)
+            expire = datetime.now(timezone.utc) + timedelta(
+                hours=settings.JWT_EXPIRATION_HOURS
+            )
 
         to_encode = {
             "sub": user_id,  # subject - user ID
             "exp": expire,  # expiration time
             "iat": datetime.now(timezone.utc),  # issued at
-            "type": "access_token"
+            "type": "access_token",
         }
 
         encoded_jwt = jwt.encode(
-            to_encode,
-            settings.JWT_SECRET_KEY,
-            algorithm=settings.JWT_ALGORITHM
+            to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
         )
         return encoded_jwt
 
@@ -49,9 +50,7 @@ class AuthService:
         """Verify JWT token and return user_id"""
         try:
             payload = jwt.decode(
-                token,
-                settings.JWT_SECRET_KEY,
-                algorithms=[settings.JWT_ALGORITHM]
+                token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
             )
             user_id: str = payload.get("sub")
             token_type: str = payload.get("type")
@@ -80,13 +79,12 @@ class AuthService:
             email=str(user_data.email),
             hashed_password=hashed_password,
             created_at=datetime.now(timezone.utc),
-            is_active=True
+            is_active=True,
         )
 
         # Save to Firestore
         user_id = await firebase_service.create_document(
-            settings.USERS_COLLECTION,
-            user_in_db.to_dict()
+            settings.USERS_COLLECTION, user_in_db.to_dict()
         )
 
         user_in_db.id = user_id
@@ -101,7 +99,7 @@ class AuthService:
             return None
 
         # Create user object
-        user = UserInDB.from_dict(user_data, user_data.get('id'))
+        user = UserInDB.from_dict(user_data, user_data.get("id"))
 
         # Check if user is active
         if not user.is_active:
@@ -116,7 +114,9 @@ class AuthService:
     @staticmethod
     async def get_user_by_id(user_id: str) -> Optional[UserInDB]:
         """Get user by ID"""
-        user_data = await firebase_service.get_document(settings.USERS_COLLECTION, user_id)
+        user_data = await firebase_service.get_document(
+            settings.USERS_COLLECTION, user_id
+        )
         if not user_data:
             return None
 
@@ -130,7 +130,7 @@ class AuthService:
             name=user.name,
             email=user.email,
             created_at=user.created_at,
-            updated_at=user.updated_at
+            updated_at=user.updated_at,
         )
 
     @staticmethod
@@ -140,7 +140,7 @@ class AuthService:
             await firebase_service.update_document(
                 settings.USERS_COLLECTION,
                 user_id,
-                {"last_login": datetime.now(timezone.utc)}
+                {"last_login": datetime.now(timezone.utc)},
             )
         except Exception as e:
             # Don't fail login if this fails

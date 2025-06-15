@@ -14,7 +14,7 @@ class UserRegister(BaseModel):
             "example": {
                 "name": "Jan Kowalski",
                 "email": "jan@example.com",
-                "password": "securepassword123"
+                "password": "securepassword123",
             }
         }
 
@@ -25,10 +25,7 @@ class UserLogin(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "example": {
-                "email": "jan@example.com",
-                "password": "securepassword123"
-            }
+            "example": {"email": "jan@example.com", "password": "securepassword123"}
         }
 
 
@@ -37,11 +34,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "name": "Jan Nowak"
-            }
-        }
+        json_schema_extra = {"example": {"name": "Jan Nowak"}}
 
 
 # Response models (output)
@@ -59,7 +52,7 @@ class UserResponse(BaseModel):
                 "name": "Jan Kowalski",
                 "email": "jan@example.com",
                 "created_at": "2024-01-15T10:30:00Z",
-                "updated_at": "2024-01-20T14:45:00Z"
+                "updated_at": "2024-01-20T14:45:00Z",
             }
         }
 
@@ -80,8 +73,8 @@ class TokenResponse(BaseModel):
                     "id": "user123",
                     "name": "Jan Kowalski",
                     "email": "jan@example.com",
-                    "created_at": "2024-01-15T10:30:00Z"
-                }
+                    "created_at": "2024-01-15T10:30:00Z",
+                },
             }
         }
 
@@ -99,12 +92,12 @@ class UserInDB(BaseModel):
     def to_dict(self) -> dict:
         """Convert to dictionary for Firestore"""
         data = self.model_dump()
-        data.pop('id', None)  # Firestore handles ID separately
+        data.pop("id", None)  # Firestore handles ID separately
         return data
 
     @classmethod
     def from_dict(cls, data: dict, doc_id: str = None):
         """Create from Firestore document"""
         if doc_id:
-            data['id'] = doc_id
+            data["id"] = doc_id
         return cls(**data)

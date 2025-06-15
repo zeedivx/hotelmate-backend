@@ -32,9 +32,9 @@ class FirebaseService:
             if os.path.exists(settings.FIREBASE_CREDENTIALS_PATH):
                 # Use service account file
                 cred = credentials.Certificate(settings.FIREBASE_CREDENTIALS_PATH)
-                firebase_admin.initialize_app(cred, {
-                    'projectId': settings.FIREBASE_PROJECT_ID
-                })
+                firebase_admin.initialize_app(
+                    cred, {"projectId": settings.FIREBASE_PROJECT_ID}
+                )
                 print(f"✅ Firebase initialized with credentials file")
             else:
                 # Use default credentials (for local development)
@@ -77,7 +77,9 @@ class FirebaseService:
         return self.get_collection(settings.RESERVATIONS_COLLECTION)
 
     # CRUD operations
-    async def create_document(self, collection_name: str, data: Dict[str, Any], doc_id: Optional[str] = None) -> str:
+    async def create_document(
+        self, collection_name: str, data: Dict[str, Any], doc_id: Optional[str] = None
+    ) -> str:
         """Create a new document in collection"""
         try:
             collection = self.get_collection(collection_name)
@@ -92,7 +94,9 @@ class FirebaseService:
             print(f"❌ Error creating document: {e}")
             raise
 
-    async def get_document(self, collection_name: str, doc_id: str) -> Optional[Dict[str, Any]]:
+    async def get_document(
+        self, collection_name: str, doc_id: str
+    ) -> Optional[Dict[str, Any]]:
         """Get a document by ID"""
         try:
             doc_ref = self.get_collection(collection_name).document(doc_id)
@@ -100,14 +104,16 @@ class FirebaseService:
 
             if doc.exists:
                 data = doc.to_dict()
-                data['id'] = doc.id
+                data["id"] = doc.id
                 return data
             return None
         except Exception as e:
             print(f"❌ Error getting document: {e}")
             raise
 
-    async def update_document(self, collection_name: str, doc_id: str, data: Dict[str, Any]) -> bool:
+    async def update_document(
+        self, collection_name: str, doc_id: str, data: Dict[str, Any]
+    ) -> bool:
         """Update a document"""
         try:
             doc_ref = self.get_collection(collection_name).document(doc_id)
@@ -127,8 +133,12 @@ class FirebaseService:
             print(f"❌ Error deleting document: {e}")
             raise
 
-    async def get_documents(self, collection_name: str, limit: Optional[int] = None,
-                            where_clauses: Optional[List] = None) -> List[Dict[str, Any]]:
+    async def get_documents(
+        self,
+        collection_name: str,
+        limit: Optional[int] = None,
+        where_clauses: Optional[List] = None,
+    ) -> List[Dict[str, Any]]:
         """Get multiple documents from collection"""
         try:
             query = self.get_collection(collection_name)
@@ -147,7 +157,7 @@ class FirebaseService:
 
             for doc in docs:
                 data = doc.to_dict()
-                data['id'] = doc.id
+                data["id"] = doc.id
                 result.append(data)
 
             return result
@@ -171,7 +181,7 @@ class FirebaseService:
             users = await self.get_documents(
                 settings.USERS_COLLECTION,
                 limit=1,
-                where_clauses=[('email', '==', email)]
+                where_clauses=[("email", "==", email)],
             )
             return users[0] if users else None
         except Exception as e:

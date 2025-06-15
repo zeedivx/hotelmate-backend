@@ -10,7 +10,9 @@ security = HTTPBearer()
 
 
 # Dependency to get current user
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> UserResponse:
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> UserResponse:
     """Get current authenticated user"""
     token = credentials.credentials
     user_id = auth_service.verify_token(token)
@@ -26,13 +28,15 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Użytkownik nie został znaleziony"
+            detail="Użytkownik nie został znaleziony",
         )
 
     return auth_service.user_to_response(user)
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(user_data: UserRegister):
     """
     Register a new user
@@ -55,19 +59,16 @@ async def register(user_data: UserRegister):
             access_token=access_token,
             token_type="bearer",
             expires_in=settings.JWT_EXPIRATION_HOURS * 3600,  # Convert hours to seconds
-            user=user_response
+            user=user_response,
         )
 
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         print(f"❌ Registration error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Błąd podczas rejestracji użytkownika"
+            detail="Błąd podczas rejestracji użytkownika",
         )
 
 
@@ -82,14 +83,13 @@ async def login(user_credentials: UserLogin):
     try:
         # Authenticate user
         user = await auth_service.authenticate_user(
-            user_credentials.email,
-            user_credentials.password
+            user_credentials.email, user_credentials.password
         )
 
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Nieprawidłowy email lub hasło"
+                detail="Nieprawidłowy email lub hasło",
             )
 
         # Update last login
@@ -105,7 +105,7 @@ async def login(user_credentials: UserLogin):
             access_token=access_token,
             token_type="bearer",
             expires_in=settings.JWT_EXPIRATION_HOURS * 3600,
-            user=user_response
+            user=user_response,
         )
 
     except HTTPException:
@@ -114,7 +114,7 @@ async def login(user_credentials: UserLogin):
         print(f"❌ Login error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Błąd podczas logowania"
+            detail="Błąd podczas logowania",
         )
 
 
@@ -154,12 +154,12 @@ async def refresh_token(current_user: UserResponse = Depends(get_current_user)):
             access_token=access_token,
             token_type="bearer",
             expires_in=settings.JWT_EXPIRATION_HOURS * 3600,
-            user=current_user
+            user=current_user,
         )
 
     except Exception as e:
         print(f"❌ Token refresh error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Błąd podczas odświeżania tokenu"
+            detail="Błąd podczas odświeżania tokenu",
         )

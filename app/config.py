@@ -68,10 +68,7 @@ if settings.ENVIRONMENT == "production":
 # Validate required environment variables
 def validate_config():
     """Validate that all required configuration is present"""
-    required_vars = [
-        "FIREBASE_PROJECT_ID",
-        "JWT_SECRET_KEY"
-    ]
+    required_vars = ["FIREBASE_PROJECT_ID", "JWT_SECRET_KEY"]
 
     missing_vars = []
     for var in required_vars:
@@ -79,11 +76,15 @@ def validate_config():
             missing_vars.append(var)
 
     if missing_vars:
-        raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+        raise ValueError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
 
     # Check if Firebase credentials file exists
     if not os.path.exists(settings.FIREBASE_CREDENTIALS_PATH):
-        print(f"⚠️  Warning: Firebase credentials file not found at {settings.FIREBASE_CREDENTIALS_PATH}")
+        print(
+            f"⚠️  Warning: Firebase credentials file not found at {settings.FIREBASE_CREDENTIALS_PATH}"
+        )
         print("   You'll need to add this file to connect to Firebase Firestore")
 
     return True

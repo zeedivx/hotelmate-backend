@@ -98,7 +98,7 @@ class UserInDB(BaseModel):
 
     def to_dict(self) -> dict:
         """Convert to dictionary for Firestore"""
-        data = self.dict()
+        data = self.model_dump()
         data.pop('id', None)  # Firestore handles ID separately
         return data
 

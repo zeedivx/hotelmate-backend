@@ -41,6 +41,7 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     id: str = Field(..., description="User ID")
     name: str = Field(..., description="Full name")
+    is_admin: bool = Field(default=False, description="Is user an admin")
     email: EmailStr = Field(..., description="Email address")
     created_at: datetime = Field(..., description="Account creation timestamp")
     updated_at: Optional[datetime] = Field(None, description="Last update timestamp")
@@ -50,6 +51,7 @@ class UserResponse(BaseModel):
             "example": {
                 "id": "user123",
                 "name": "Jan Kowalski",
+                "is_admin": False,
                 "email": "jan@example.com",
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-20T14:45:00Z",
@@ -84,6 +86,7 @@ class UserInDB(BaseModel):
     id: Optional[str] = None
     name: str
     email: str
+    is_admin: bool = False
     hashed_password: str
     created_at: datetime
     updated_at: Optional[datetime] = None

@@ -1,4 +1,3 @@
-from datetime import timedelta
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.models.user import UserRegister, UserLogin, TokenResponse, UserResponse
@@ -32,6 +31,19 @@ async def get_current_user(
         )
 
     return auth_service.user_to_response(user)
+
+
+async def get_current_admin(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> UserResponse:
+    """Get current authenticated admin user"""
+    user = await get_current_user(credentials)
+    if not user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Brak uprawnień administratora",
+        )
+    return user
 
 
 @router.post(

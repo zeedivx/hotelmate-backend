@@ -25,6 +25,18 @@ class HotelSearchRequest(BaseModel):
         None, description="Search query for hotel name or location"
     )
     city: Optional[str] = Field(None, description="City to filter hotels")
+    country: Optional[str] = Field(
+        None, description="Country to filter hotels"
+    )
+    latitude: Optional[float] = Field(
+        None, ge=-90, le=90, description="Latitude for location-based search"
+    )
+    longitude: Optional[float] = Field(
+        None, ge=-180, le=180, description="Longitude for location-based search"
+    )
+    radius_km: Optional[float] = Field(
+        None, ge=0, description="Search radius in kilometers from the given location"
+    )
     category: Optional[HotelCategory] = Field(
         None, description="Hotel category to filter"
     )

@@ -1,4 +1,3 @@
-import json
 import os
 from typing import Dict, List, Optional, Any
 import firebase_admin
@@ -35,11 +34,11 @@ class FirebaseService:
                 firebase_admin.initialize_app(
                     cred, {"projectId": settings.FIREBASE_PROJECT_ID}
                 )
-                print(f"✅ Firebase initialized with credentials file")
+                print("✅ Firebase initialized with credentials file")
             else:
                 # Use default credentials (for local development)
                 firebase_admin.initialize_app()
-                print(f"✅ Firebase initialized with default credentials")
+                print("✅ Firebase initialized with default credentials")
 
             self._db = firestore.client()
             print(f"🔥 Connected to Firestore: {settings.FIREBASE_PROJECT_ID}")

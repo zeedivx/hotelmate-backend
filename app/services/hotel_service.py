@@ -169,7 +169,7 @@ class HotelService:
                 query = query.order_by('created_at', direction=firestore.Query.DESCENDING)
 
             # Get total count for pagination
-            total_results = len((await query.get()))
+            total_results = len((query.get()))
 
             # Apply pagination
             if search_request.page and search_request.limit:
@@ -177,7 +177,7 @@ class HotelService:
                 query = query.offset(offset).limit(search_request.limit)
 
             # Execute query
-            docs = await query.get()
+            docs = query.get()
             hotels = []
 
             for doc in docs:
@@ -229,7 +229,7 @@ class HotelService:
                      .where('status', '==', HotelStatus.ACTIVE.value)
                      .limit(limit))
 
-            docs = await query.get()
+            docs = query.get()
             hotels = []
 
             for doc in docs:
@@ -253,7 +253,8 @@ class HotelService:
                      .where('status', '==', HotelStatus.ACTIVE.value)
                      .limit(limit))
 
-            docs = await query.get()
+            docs = query.get()
+            print(f"🔥 Found {len(docs)} hotels in category {category.value}")
             hotels = []
 
             for doc in docs:
@@ -277,7 +278,7 @@ class HotelService:
                      .order_by('rating', direction=firestore.Query.DESCENDING)
                      .limit(limit))
 
-            docs = await query.get()
+            docs = query.get()
             hotels = []
 
             for doc in docs:

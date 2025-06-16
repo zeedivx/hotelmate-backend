@@ -216,6 +216,7 @@ async def get_hotels_by_category(
     """
     try:
         hotels = await hotel_service.get_hotels_by_category(category, limit)
+        print(f"🔍 Found {len(hotels)} hotels in category {category.value}")
         return hotels
 
     except Exception as e:

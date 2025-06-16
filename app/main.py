@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import auth, hotels
+from app.routers import auth, hotels, reservations
 
 
 @asynccontextmanager
@@ -42,7 +42,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(hotels.router, prefix="/api/hotels", tags=["Hotels"])
-# app.include_router(reservations.router, prefix="/api/reservations", tags=["Reservations"])
+app.include_router(reservations.router, prefix="/api/reservations", tags=["Reservations"])
 
 
 # Root endpoint

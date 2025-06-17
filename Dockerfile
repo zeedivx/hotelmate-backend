@@ -14,15 +14,21 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Firebase credentials
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy Firebase credentials (if exists)
 COPY firebase-admin-credentials.json* ./
 
 # Copy application code
-COPY app/ ./app/
-COPY seed.py ./
+COPY . .
 
 # Expose port
 EXPOSE 8000
 
-# Default command for FastAPI with uvicorn
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set Python path and run uvicorn
+ENV PYTHONPATH=/app
+WORKDIR /app
+CMD ["python", "-c", "import sys; sys.path.insert(0, '/app'); from app.main import app; import uvicorn; uvicorn.run(app, host='0.0.0.0', port=8000)"]
